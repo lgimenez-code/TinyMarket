@@ -18,7 +18,11 @@ namespace TinyMarketDTO.RequestsDTO
         public string Description { get; set; }
 
 
-
+        /// <summary>
+        /// convierte de un DTO a una entidad
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         public static Category FromCategoryDTO(CategoryUpdateDTO dto)
         {
             return new Category

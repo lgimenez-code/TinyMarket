@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TinyMarketCore.Entities;
-using TinyMarketCore.Interfaces;
 using TinyMarketCore.Services;
 using TinyMarketDTO.RequestsDTO;
 

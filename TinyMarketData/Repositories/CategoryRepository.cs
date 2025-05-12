@@ -2,7 +2,6 @@
 using TinyMarketCore.Interfaces;
 using Microsoft.Data.SqlClient;
 using System.Data;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace TinyMarketData.Repositories
 {

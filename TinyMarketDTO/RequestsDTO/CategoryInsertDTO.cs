@@ -1,6 +1,4 @@
-﻿
-
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using TinyMarketCore.Entities;
 
 namespace TinyMarketDTO.RequestsDTO
@@ -14,6 +12,11 @@ namespace TinyMarketDTO.RequestsDTO
         [StringLength(200, ErrorMessage = "La descripción no puede superar los 200 caracteres.")]
         public string Description { get; set; }
 
+        /// <summary>
+        /// convierte de un DTO a una entidad
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         public static Category FromCategoryDTO(CategoryInsertDTO dto)
         {
             return new Category

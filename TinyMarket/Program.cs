@@ -1,6 +1,3 @@
-using TinyMarketCore.Services;
-using TinyMarketCore.Interfaces;
-using TinyMarketData.Repositories;
 using Microsoft.OpenApi.Models;
 using TinyMarketData.Extensions;
 using System.Reflection;
