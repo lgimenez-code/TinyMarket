@@ -1,0 +1,6 @@
+@TinyMarket_HostAddress = http://localhost:5149
+
+GET {{TinyMarket_HostAddress}}/categories/
+Accept: application/json
+
+###
