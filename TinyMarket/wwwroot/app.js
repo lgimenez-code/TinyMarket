@@ -185,11 +185,12 @@ function renderProducts(productsToRender) {
 
     productsContainer.innerHTML = '';
     productsToRender.forEach(product => {
-        const category = categories.find(c => c.categoryId === product.categoryId) || { name: 'Desconocida' };
-        const supplier = suppliers.find(s => s.supplierId === product.supplierId) || { name: 'Desconocido' };
+        const category = categories.find(c => c.categoryId === product.categoryId) || '';
+        const supplier = suppliers.find(s => s.supplierId === product.supplierId) || '';
 
         const statusText = getStatusText(product.status);
         const statusClass = getStatusClass(product.status);
+        const expirationDate = product.expirationDate ? new Date(product.expirationDate).toLocaleDateString() : '';
 
         const productCard = document.createElement('div');
         productCard.className = 'product-card';
@@ -205,7 +206,7 @@ function renderProducts(productsToRender) {
                     <p><strong>Stock:</strong> ${product.stock}</p>
                     <p><strong>Categoría:</strong> ${category.name}</p>
                     <p><strong>Proveedor:</strong> ${supplier.name}</p>
-                    ${product.expirationDate ? `<p><strong>Expiración:</strong> ${formatDate(product.expirationDate)}</p>` : ''}
+                    ${product.expirationDate ? `<p><strong>Expiración:</strong> ${expirationDate}</p>` : ''}
                 </div>
             </div>
             <div class="product-actions">
@@ -237,13 +238,6 @@ function getStatusClass(status) {
         case 'A': return 'inactive';
     }
 }
-
-// format dates
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString();
-}
-
 
 // apply the selected filters and then make a product request
 async function applyFilters() {
@@ -340,17 +334,7 @@ function openEditProductModal(productId) {
     productCategorySelect.value = product.categoryId;
     productSupplierSelect.value = product.supplierId;
     productStatusSelect.value = product.status;
-
-    if (product.expirationDate) {
-        // convert expiration date to YYYY-MM-DD format
-        const date = new Date(product.expirationDate);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        productExpirationInput.value = `${year}-${month}-${day}`;
-    } else {
-        productExpirationInput.value = '';
-    }
+    productExpirationInput.value = formatDate(product.expirationDate);
 
     openModal();
 }
@@ -369,16 +353,16 @@ async function handleProductSubmit(event) {
         categoryId: parseInt(productCategorySelect.value),
         supplierId: parseInt(productSupplierSelect.value),
         status: productStatusSelect.value,
-        expirationDate: productExpirationInput.value || null
+        expirationDate: formatDate(productExpirationInput.value)
     };
 
     try {
         // if a product ID is selected, it is updated, otherwise the product is created.
         if (currentProductId) {
-            const response = await updateProduct(productData);
+            await updateProduct(productData);
             showSuccess('Producto actualizado correctamente');
         } else {
-            const response = await createProduct(productData);
+            await createProduct(productData);
             showSuccess('Producto creado correctamente');
         }
         closeModal();
@@ -489,4 +473,12 @@ function showError(message) {
 
 function showSuccess(message) {
     alert(message);
+}
+
+function formatDate(dateParameter) {
+    const date = dateParameter ? new Date(dateParameter) : new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
