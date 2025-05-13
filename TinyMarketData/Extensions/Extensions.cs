@@ -17,6 +17,7 @@ namespace TinyMarketData.Extensions
             string connectionString = configuration.GetConnectionString("DefaultConnection");
 
             services.AddScoped<ICategoryRepository>(sp => new CategoryRepository(connectionString));
+            services.AddScoped<IProductRepository>(sp => new ProductRepository(connectionString));
 
             return services;
         }
@@ -27,6 +28,7 @@ namespace TinyMarketData.Extensions
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IProductService, ProductService>();
 
             return services;
         }

@@ -11,6 +11,10 @@ namespace TinyMarketData.Repositories
             _connectionString = connectionString;
         }
 
+        /// <summary>
+        /// crea la conexion a la base de datos
+        /// </summary>
+        /// <returns></returns>
         protected SqlConnection CreateConnection()
         {
             return new SqlConnection(_connectionString);

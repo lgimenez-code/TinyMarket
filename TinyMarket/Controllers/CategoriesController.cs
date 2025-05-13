@@ -54,15 +54,22 @@ namespace TinyMarketWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult Insert([FromBody] CategoryInsertDTO dto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                Category category = CategoryInsertDTO.FromCategoryDTO(dto);
+
+                int id = _categoryService.Add(category);
+
+                return Ok(new { message = "Categoría registrada correctamente", id });
             }
-            Category category = CategoryInsertDTO.FromCategoryDTO(dto);
-
-            int id = _categoryService.Add(category);
-
-            return Ok(new { message = "Categoría registrada correctamente", id });
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>
@@ -86,15 +93,22 @@ namespace TinyMarketWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult Update([FromBody] CategoryUpdateDTO dto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                Category category = CategoryUpdateDTO.FromCategoryDTO(dto);
+
+                _categoryService.Update(category);
+
+                return Ok("Categoría modificada correctamente");
             }
-            Category category = CategoryUpdateDTO.FromCategoryDTO(dto);
-
-            _categoryService.Update(category);
-
-            return Ok("Categoría modificada correctamente");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>
@@ -114,14 +128,19 @@ namespace TinyMarketWebApi.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult Delete(int id)
         {
-            if (id == 0)
+            try
             {
-                return BadRequest("El Id de la categoría es obligatorio.");
+                if (id == 0)
+                {
+                    return BadRequest("El Id de la categoría es obligatorio.");
+                }
+                _categoryService.Delete(id);
+                return Ok("Categoría eliminada correctamente");
             }
-
-            _categoryService.Delete(id);
-
-            return Ok("Categoría eliminada correctamente");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

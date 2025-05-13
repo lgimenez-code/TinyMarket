@@ -10,9 +10,9 @@ namespace TinyMarketCore.Entities
         public int? Stock { get; set; }
         public int? CategoryId { get; set; }
         public int? SupplierId { get; set; }
-        public DateTime CreationDate { get; set; }
-        public DateTime ModificationDate { get; set; }
-        public DateTime ExpirationDate { get; set; }
+        public DateTime? CreationDate { get; set; }
+        public DateTime? ModificationDate { get; set; }
+        public DateTime? ExpirationDate { get; set; }
         public string Status { get; set; }
     }
 }

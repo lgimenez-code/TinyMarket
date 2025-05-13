@@ -11,6 +11,11 @@ namespace TinyMarketData.Repositories
         {
         }
 
+        /// <summary>
+        /// obtiene un listado de categorias
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public IEnumerable<Category> GetAll()
         {
             try
@@ -49,10 +54,16 @@ namespace TinyMarketData.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al obtener las categorías", ex);
+                throw new Exception($"Error al obtener las categorías {ex.Message}");
             }
         }
 
+        /// <summary>
+        /// registra una nueva Categoria
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public int Add(Category entity)
         {
             try
@@ -76,10 +87,15 @@ namespace TinyMarketData.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al agregar la categoría", ex);
+                throw new Exception($"Error al agregar la categoría. {ex.Message}");
             }
         }
 
+        /// <summary>
+        /// modifica una Categoria
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <exception cref="Exception"></exception>
         public void Update(Category entity)
         {
             try
@@ -102,10 +118,15 @@ namespace TinyMarketData.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al modificar la categoría", ex);
+                throw new Exception($"Error al modificar la categoría. {ex.Message}");
             }
         }
 
+        /// <summary>
+        /// elimina una categoria
+        /// </summary>
+        /// <param name="id"></param>
+        /// <exception cref="Exception"></exception>
         public void Delete(int id)
         {
             try
@@ -125,9 +146,8 @@ namespace TinyMarketData.Repositories
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al eliminar la categoría", ex);
+                throw new Exception($"Error al eliminar la categoría. {ex.Message}");
             }
         }
-
     }
 }
