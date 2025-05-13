@@ -1,10 +1,10 @@
-﻿// Variables globales
+﻿// global variables
 let products = [];
 let categories = [];
 let suppliers = [];
 let currentProductId = null;
 
-// elementos
+// elements
 const productsContainer = document.getElementById('products-container');
 const loader = document.getElementById('loader');
 const sidebar = document.getElementById('sidebar');
@@ -16,7 +16,7 @@ const closeModalBtn = document.getElementById('close-modal');
 const cancelFormBtn = document.getElementById('cancel-form');
 const addProductBtn = document.getElementById('add-product');
 
-// filtros
+// filters
 const searchInput = document.getElementById('search');
 const categoryFilter = document.getElementById('category');
 const supplierFilter = document.getElementById('supplier');
@@ -27,7 +27,7 @@ const stockInput = document.getElementById('stock-input');
 const applyFiltersBtn = document.getElementById('btn-apply-filters');
 const resetFiltersBtn = document.getElementById('btn-reset-filters');
 
-// formulario
+// form inputs
 const productIdInput = document.getElementById('product-id');
 const productNameInput = document.getElementById('product-name');
 const productDescInput = document.getElementById('product-description');
@@ -38,49 +38,42 @@ const productSupplierSelect = document.getElementById('product-supplier');
 const productExpirationInput = document.getElementById('product-expiration');
 const productStatusSelect = document.getElementById('product-status');
 
-// Inicialización cuando el DOM está listo
+// initialize the app and the events
 document.addEventListener('DOMContentLoaded', () => {
     init();
     setupEventListeners();
 });
 
-// Inicializar la aplicación
+// initialize the app
 async function init() {
     try {
-        // Cargar datos necesarios
+        // makes requests to fill in the form fields
         await Promise.all([
             fetchCategories(),
             fetchSuppliers(),
             fetchProducts()
         ]);
-        
-        // crea los inputs de categorías y proveedores
+
+        // creates category and supplier inputs
         createCategorySelects();
         createSupplierSelects();
-        
-        // se muestran los productos
+
+        // the products are displayed
         renderProducts(products);
     } catch (error) {
         showError('Error al inicializar la aplicación: ' + error.message);
     }
 }
 
-// Configurar todos los event listeners
+// configure all event listeners
 function setupEventListeners() {
-    // Navegación
     hamburgerMenu.addEventListener('click', toggleSidebar);
-    
-    // Filtros
     applyFiltersBtn.addEventListener('click', applyFilters);
     resetFiltersBtn.addEventListener('click', resetFilters);
-    
-    // Modal y formulario
     addProductBtn.addEventListener('click', openAddProductModal);
     closeModalBtn.addEventListener('click', closeModal);
     cancelFormBtn.addEventListener('click', closeModal);
     productForm.addEventListener('submit', handleProductSubmit);
-    
-    // Cierre del modal al hacer clic fuera
     productModal.addEventListener('click', (e) => {
         if (e.target === productModal) {
             closeModal();
@@ -89,7 +82,7 @@ function setupEventListeners() {
 }
 
 
-// Obtener productos desde la API
+// get products from the API
 async function fetchProducts() {
     showLoader();
     try {
@@ -106,7 +99,7 @@ async function fetchProducts() {
     }
 }
 
-// Obtener productos con filtros seleccionados
+// get products with selected filters
 async function fetchProductsFiltered(filters) {
     showLoader();
     try {
@@ -130,7 +123,7 @@ async function fetchProductsFiltered(filters) {
     }
 }
 
-// Obtener categorías desde la API
+// get categories from the API
 async function fetchCategories() {
     try {
         const response = await fetch('/categories');
@@ -144,7 +137,7 @@ async function fetchCategories() {
     }
 }
 
-// Obtener proveedores desde la API
+// get providers from the API
 async function fetchSuppliers() {
     try {
         const response = await fetch('/suppliers');
@@ -158,24 +151,24 @@ async function fetchSuppliers() {
     }
 }
 
-// Rellenar los selectores de categorías (rellenar el selector de filtro y el del formulario)
+// fill in the category selectors (fill in the filter and form selectors)
 function createCategorySelects() {
     categories.forEach(category => {
         categoryFilter.innerHTML += `<option value="${category.categoryId}">${category.name}</option>`;
     });
-    
+
     productCategorySelect.innerHTML = '';
     categories.forEach(category => {
         productCategorySelect.innerHTML += `<option value="${category.categoryId}">${category.name}</option>`;
     });
 }
 
-// Rellenar los selectores de proveedores (rellenar el selector de filtro y el del formulario)
+// fill in the supplier selectors (fill in the filter selector and the form selector)
 function createSupplierSelects() {
     suppliers.forEach(supplier => {
         supplierFilter.innerHTML += `<option value="${supplier.supplierId}">${supplier.name}</option>`;
     });
-    
+
     productSupplierSelect.innerHTML = '';
     suppliers.forEach(supplier => {
         productSupplierSelect.innerHTML += `<option value="${supplier.supplierId}">${supplier.name}</option>`;
@@ -183,21 +176,21 @@ function createSupplierSelects() {
 }
 
 
-// Renderizar productos en la página
+// render products on the page
 function renderProducts(productsToRender) {
     if (productsToRender.length === 0) {
         productsContainer.innerHTML = '<div class="no-products">No se encontraron productos</div>';
         return;
     }
-    
+
     productsContainer.innerHTML = '';
     productsToRender.forEach(product => {
         const category = categories.find(c => c.categoryId === product.categoryId) || { name: 'Desconocida' };
         const supplier = suppliers.find(s => s.supplierId === product.supplierId) || { name: 'Desconocido' };
-        
+
         const statusText = getStatusText(product.status);
         const statusClass = getStatusClass(product.status);
-        
+
         const productCard = document.createElement('div');
         productCard.className = 'product-card';
         productCard.innerHTML = `
@@ -220,16 +213,16 @@ function renderProducts(productsToRender) {
                 <button class="btn-delete btn-base" data-id="${product.productId}">Eliminar</button>
             </div>
         `;
-        
-        // Añadir event listeners a los botones
+
+        // add Events to buttons
         productCard.querySelector('.btn-edit').addEventListener('click', () => openEditProductModal(product.productId));
         productCard.querySelector('.btn-delete').addEventListener('click', () => confirmDeleteProduct(product.productId, product.name));
-        
+
         productsContainer.appendChild(productCard);
     });
 }
 
-// Obtener texto del estado
+// get the Status text based on the status code
 function getStatusText(status) {
     switch(status) {
         case 'R': return 'Registrado';
@@ -237,7 +230,7 @@ function getStatusText(status) {
     }
 }
 
-// Obtener clase CSS para el estado
+// get the Status class based on the status code
 function getStatusClass(status) {
     switch(status) {
         case 'R': return 'active';
@@ -245,14 +238,14 @@ function getStatusClass(status) {
     }
 }
 
-// Formatear fecha
+// format dates
 function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString();
 }
 
 
-// Aplicar filtros
+// apply the selected filters and then make a product request
 async function applyFilters() {
     showLoader();
     if (validateFilters()) {
@@ -272,7 +265,7 @@ async function applyFilters() {
 
         await fetchProductsFiltered(filterDTO);
 
-        // actualiza la vista con los productos filtrados
+        // refresh the view with the filtered products
         renderProducts(products);
 
     } catch (error) {
@@ -280,14 +273,14 @@ async function applyFilters() {
         renderProducts([]);
     } finally {
         hideLoader();
-        // para móviles, cerrar el sidebar después de aplicar filtros
+        // for mobile devices, close the sidebar after applying filters
         if (window.innerWidth <= 768) {
             toggleSidebar();
         }
     }
 }
 
-// valida si los filtros se aplicaron correctamente
+// validates whether the filters were applied correctly
 function validateFilters() {
     const fMinPrice = parseFloat(minPriceInput.value)
     const fMaxPrice = parseFloat(maxPriceInput.value)
@@ -302,7 +295,7 @@ function validateFilters() {
     return false;
 }
 
-// Resetear filtros
+// reset filters to default values
 function resetFilters() {
     searchInput.value = '';
     categoryFilter.value = '';
@@ -311,31 +304,34 @@ function resetFilters() {
     minPriceInput.value = '';
     maxPriceInput.value = '';
     stockInput.value = '';
-    
+    minPriceInput.classList.remove('inactive')
+    maxPriceInput.classList.remove('inactive')
+
     renderProducts(products);
 }
 
 
-// Abrir modal para añadir producto
+// open modal to add a new product
 function openAddProductModal() {
     modalTitle.textContent = 'Añadir Producto';
-    resetProductForm();
+    productForm.reset();
+    productIdInput.value = '';
     currentProductId = null;
     openModal();
 }
 
-// Abrir modal para editar producto
+// open modal to edit an existing product
 function openEditProductModal(productId) {
     const product = products.find(p => p.productId === productId);
     if (!product) {
         showError('Producto no encontrado');
         return;
     }
-    
+
     modalTitle.textContent = 'Editar Producto';
     currentProductId = productId;
-    
-    // Rellenar el formulario con los datos del producto
+
+    // fill in the form with product data
     productIdInput.value = product.productId;
     productNameInput.value = product.name;
     productDescInput.value = product.description;
@@ -344,9 +340,9 @@ function openEditProductModal(productId) {
     productCategorySelect.value = product.categoryId;
     productSupplierSelect.value = product.supplierId;
     productStatusSelect.value = product.status;
-    
+
     if (product.expirationDate) {
-        // Convertir la fecha a formato YYYY-MM-DD para el input date
+        // convert expiration date to YYYY-MM-DD format
         const date = new Date(product.expirationDate);
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -355,37 +351,38 @@ function openEditProductModal(productId) {
     } else {
         productExpirationInput.value = '';
     }
-    
+
     openModal();
 }
 
-// Manejar el envío del formulario (crear o actualizar)
+// handle product form submission
 async function handleProductSubmit(event) {
     event.preventDefault();
-    
-    // Recoger datos del formulario
+
+    // get form data
     const productData = {
+        productId: currentProductId || null,
         name: productNameInput.value,
         description: productDescInput.value,
         price: parseFloat(productPriceInput.value),
         stock: parseInt(productStockInput.value),
-        categoryId: productCategorySelect.value,
-        supplierId: productSupplierSelect.value,
+        categoryId: parseInt(productCategorySelect.value),
+        supplierId: parseInt(productSupplierSelect.value),
         status: productStatusSelect.value,
         expirationDate: productExpirationInput.value || null
     };
-    
+
     try {
-        // Si hay un id seleccionado se procede a actualizar, sino a crear el producto
+        // if a product ID is selected, it is updated, otherwise the product is created.
         if (currentProductId) {
-            await updateProduct(productData);
+            const response = await updateProduct(productData);
             showSuccess('Producto actualizado correctamente');
         } else {
-            await createProduct(productData);
+            const response = await createProduct(productData);
             showSuccess('Producto creado correctamente');
         }
-        
-        // Recargar productos y cerrar modal
+        closeModal();
+        // reload products and close modal
         resetFilters();
         await fetchProducts();
         renderProducts(products);
@@ -395,59 +392,66 @@ async function handleProductSubmit(event) {
     }
 }
 
-// Crear nuevo producto
+// create a new product
 async function createProduct(productData) {
-    const response = await fetch('/products', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(productData)
-    });
-    
-    if (!response.ok) {
-        throw new Error('Error al crear el producto');
+    try {
+        const response = await fetch('/products', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(productData)
+        });
+        if (!response.ok) {
+            throw new Error('Error al crear el producto');
+        }
+
+    } catch (error) {
+        showError('Error al crear el producto: ' + error.message);
+        return;        
     }
-    
-    return await response.json();
 }
 
-// Actualizar producto existente
+// update an existing product
 async function updateProduct(productData) {
-    const response = await fetch(`/products/${currentProductId}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(productData)
-    });
-    
-    if (!response.ok) {
-        throw new Error('Error al actualizar el producto');
+    try {
+        const response = await fetch(`/products`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(productData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al actualizar el producto');
+        }
+
+    } catch (error ) {
+        showError('Error al actualizar el producto: ' + error.message);
+        return;
     }
-    
-    return await response.json();
 }
 
-// Confirmar eliminación de producto
+// confirm product deletion
 function confirmDeleteProduct(productId, productName) {
     if (confirm(`¿Estás seguro de que quieres eliminar el producto "${productName}"?`)) {
         deleteProduct(productId);
     }
 }
 
-// Eliminar producto
+// delete a product
 async function deleteProduct(productId) {
     try {
         const response = await fetch(`/products/${productId}`, {
             method: 'DELETE'
         });
-        
+
         if (!response.ok) {
             throw new Error('Error al eliminar el producto');
         }
-        
-        // Recargar productos después de eliminar
+
+        // reload products after deleting
         await fetchProducts();
         renderProducts(products);
         showSuccess('Producto eliminado correctamente');
@@ -456,47 +460,33 @@ async function deleteProduct(productId) {
     }
 }
 
-
-// Resetear formulario de producto
-function resetProductForm() {
-    productForm.reset();
-    productIdInput.value = '';
-}
-
-// Abrir modal
 function openModal() {
-    productModal.classList.add('active');
-    document.body.style.overflow = 'hidden'; // Evitar scroll de fondo
+    productModal.classList.add('activeModal');
+    document.body.style.overflow = 'hidden'; // avoid background scrolling
 }
 
-// Cerrar modal
 function closeModal() {
-    productModal.classList.remove('active');
+    productModal.classList.remove('activeModal');
     document.body.style.overflow = '';
 }
 
-// Toggle sidebar (para móvil)
 function toggleSidebar() {
-    sidebar.classList.toggle('active');
-    hamburgerMenu.classList.toggle('active');
+    sidebar.classList.toggle('activePanel');
+    hamburgerMenu.classList.toggle('activeButton');
 }
 
-// Mostrar loader
 function showLoader() {
     loader.style.display = 'flex';
 }
 
-// Ocultar loader
 function hideLoader() {
     loader.style.display = 'none';
 }
 
-// Mostrar mensaje de error
 function showError(message) {
-    //alert(message); // Se podría mejorar con un sistema de notificaciones personalizado
+    alert(message);
 }
 
-// Mostrar mensaje de éxito
 function showSuccess(message) {
-    //alert(message); // Se podría mejorar con un sistema de notificaciones personalizado
+    alert(message);
 }

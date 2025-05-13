@@ -227,7 +227,7 @@ body {
     transition: opacity 0.3s, visibility 0.3s;
 }
 
-.modal-overlay.active {
+.modal-overlay.activeModal {
     visibility: visible;
     opacity: 1;
 }
@@ -337,7 +337,7 @@ body {
         box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
     }
 
-    .sidebar.active {
+    .sidebar.activePanel {
         transform: translateX(0);
     }
 
