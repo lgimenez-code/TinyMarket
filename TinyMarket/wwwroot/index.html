@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tienda de Productos</title>
+    <link rel="icon" href="/images/favicon.png" type="image/x-icon">
     <link href="/styles.css" rel="stylesheet" />
 </head>
 <body>
@@ -27,7 +28,7 @@
                 <div class="filter-group">
                     <label for="category">Categoría</label>
                     <select id="category">
-                        <option value="">Todas las categorías</option>
+                        <option value="">Seleccione una categoría</option>
                         <!-- Opciones cargadas dinámicamente -->
                     </select>
                 </div>
@@ -35,7 +36,7 @@
                 <div class="filter-group">
                     <label for="supplier">Proveedor</label>
                     <select id="supplier">
-                        <option value="">Todos los proveedores</option>
+                        <option value="">Seleccione un proveedor</option>
                         <!-- Opciones cargadas dinámicamente -->
                     </select>
                 </div>
@@ -43,7 +44,6 @@
                 <div class="filter-group">
                     <label for="status-input">Estado</label>
                     <select id="status-input">
-                        <option value="">Seleccione un Estado</option>
                         <option value="R">Registrado</option>
                         <option value="A">Anulado</option>
                     </select>
@@ -81,7 +81,7 @@
             <div class="products-container" id="products-container">
                 <!-- Los productos se cargarán dinámicamente aquí -->
                 <div class="loader" id="loader">
-                    Cargando productos...
+                    <img src="/images/spinner.gif" width="64px" />
                 </div>
             </div>
         </main>
@@ -140,15 +140,14 @@
                 <div class="form-group">
                     <label for="product-status">Estado *</label>
                     <select id="product-status" required>
-                        <option value="A">Activo</option>
-                        <option value="R">Restringido</option>
-                        <option value="D">Descontinuado</option>
+                        <option value="R">Registrado</option>
+                        <option value="A">Anulado</option>
                     </select>
                 </div>
 
                 <div class="form-actions">
                     <button type="button" class="btn-base btn-secondary" id="cancel-form">Cancelar</button>
-                    <button type="submit" class="btn-base btn-success">Guardar</button>
+                    <button type="submit" class="btn-base">Guardar</button>
                 </div>
             </form>
         </div>

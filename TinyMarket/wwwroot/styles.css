@@ -7,7 +7,6 @@
     --accent-color: #129990;
     --accent-hover: #096B68;
     --danger: #ef4444;
-    --success: #22c55e;
     --border-radius: 8px;
     --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     --sidebar-width: 280px;
@@ -98,10 +97,6 @@ body {
     background-color: var(--danger);
 }
 
-.btn-success {
-    background-color: var(--success);
-}
-
 /* --- Formularios y campos --- */
 .filters-container h2 {
     font-size: 19.2px;
@@ -132,6 +127,16 @@ body {
 .filter-group input:focus,
 .filter-group select:focus {
     outline: 1px solid var(--accent-color);
+}
+
+.btn-delete {
+    border: 1px solid var(--danger);
+    background-color: transparent;
+    transition: background-color 0.2s;
+}
+
+.btn-delete:hover {
+    background-color: var(--danger);
 }
 
 /* --- Contenedor de productos --- */
@@ -313,13 +318,15 @@ body {
     text-align: center;
 }
 
-.status-badge.active {
-    background-color: var(--success);
+.active {
+    border: 1px solid var(--accent-color);
+    background-color: transparent;
     color: white;
 }
 
-.status-badge.inactive {
-    background-color: var(--danger);
+.inactive {
+    border: 1px solid var(--danger) !important;
+    background-color: transparent;
     color: white;
 }
 

@@ -40,12 +40,12 @@ const productStatusSelect = document.getElementById('product-status');
 
 // Inicialización cuando el DOM está listo
 document.addEventListener('DOMContentLoaded', () => {
-    initApp();
+    init();
     setupEventListeners();
 });
 
 // Inicializar la aplicación
-async function initApp() {
+async function init() {
     try {
         // Cargar datos necesarios
         await Promise.all([
@@ -93,11 +93,35 @@ function setupEventListeners() {
 async function fetchProducts() {
     showLoader();
     try {
-        const response = await fetch('/api/products');
+        const response = await fetch('/products');
         if (!response.ok) {
             throw new Error('Error al cargar productos');
         }
         products = await response.json();
+    } catch (error) {
+        showError('Error al cargar productos: ' + error.message);
+        products = [];
+    } finally {
+        hideLoader();
+    }
+}
+
+// Obtener productos con filtros seleccionados
+async function fetchProductsFiltered(filters) {
+    showLoader();
+    try {
+        const response = await fetch('/products/filtered', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(filters)
+        });
+        if (!response.ok) {
+            throw new Error('Error al cargar productos');
+        }
+        products = await response.json();
+
     } catch (error) {
         showError('Error al cargar productos: ' + error.message);
         products = [];
@@ -136,7 +160,6 @@ async function fetchSuppliers() {
 
 // Rellenar los selectores de categorías (rellenar el selector de filtro y el del formulario)
 function createCategorySelects() {
-    categoryFilter.innerHTML = '<option value="">Todas las categorías</option>';
     categories.forEach(category => {
         categoryFilter.innerHTML += `<option value="${category.categoryId}">${category.name}</option>`;
     });
@@ -149,14 +172,13 @@ function createCategorySelects() {
 
 // Rellenar los selectores de proveedores (rellenar el selector de filtro y el del formulario)
 function createSupplierSelects() {
-    supplierFilter.innerHTML = '<option value="">Todos los proveedores</option>';
     suppliers.forEach(supplier => {
-        supplierFilter.innerHTML += `<option value="${supplier.id}">${supplier.name}</option>`;
+        supplierFilter.innerHTML += `<option value="${supplier.supplierId}">${supplier.name}</option>`;
     });
     
     productSupplierSelect.innerHTML = '';
     suppliers.forEach(supplier => {
-        productSupplierSelect.innerHTML += `<option value="${supplier.id}">${supplier.name}</option>`;
+        productSupplierSelect.innerHTML += `<option value="${supplier.supplierId}">${supplier.name}</option>`;
     });
 }
 
@@ -170,8 +192,8 @@ function renderProducts(productsToRender) {
     
     productsContainer.innerHTML = '';
     productsToRender.forEach(product => {
-        const category = categories.find(c => c.id === product.categoryId) || { name: 'Desconocida' };
-        const supplier = suppliers.find(s => s.id === product.supplierId) || { name: 'Desconocido' };
+        const category = categories.find(c => c.categoryId === product.categoryId) || { name: 'Desconocida' };
+        const supplier = suppliers.find(s => s.supplierId === product.supplierId) || { name: 'Desconocido' };
         
         const statusText = getStatusText(product.status);
         const statusClass = getStatusClass(product.status);
@@ -194,14 +216,14 @@ function renderProducts(productsToRender) {
                 </div>
             </div>
             <div class="product-actions">
-                <button class="btn-edit" data-id="${product.id}">Editar</button>
-                <button class="btn-delete" data-id="${product.id}">Eliminar</button>
+                <button class="btn-edit btn-base" data-id="${product.productId}">Editar</button>
+                <button class="btn-delete btn-base" data-id="${product.productId}">Eliminar</button>
             </div>
         `;
         
         // Añadir event listeners a los botones
-        productCard.querySelector('.btn-edit').addEventListener('click', () => openEditProductModal(product.id));
-        productCard.querySelector('.btn-delete').addEventListener('click', () => confirmDeleteProduct(product.id, product.name));
+        productCard.querySelector('.btn-edit').addEventListener('click', () => openEditProductModal(product.productId));
+        productCard.querySelector('.btn-delete').addEventListener('click', () => confirmDeleteProduct(product.productId, product.name));
         
         productsContainer.appendChild(productCard);
     });
@@ -210,20 +232,16 @@ function renderProducts(productsToRender) {
 // Obtener texto del estado
 function getStatusText(status) {
     switch(status) {
-        case 'A': return 'Activo';
-        case 'R': return 'Restringido';
-        case 'D': return 'Descontinuado';
-        default: return 'Desconocido';
+        case 'R': return 'Registrado';
+        case 'A': return 'Anulado';
     }
 }
 
 // Obtener clase CSS para el estado
 function getStatusClass(status) {
     switch(status) {
-        case 'A': return 'status-active';
-        case 'R': return 'status-restricted';
-        case 'D': return 'status-discontinued';
-        default: return '';
+        case 'R': return 'active';
+        case 'A': return 'inactive';
     }
 }
 
@@ -235,56 +253,53 @@ function formatDate(dateString) {
 
 
 // Aplicar filtros
-function applyFilters() {
-    const searchTerm = searchInput.value.toLowerCase();
-    const categoryId = categoryFilter.value;
-    const supplierId = supplierFilter.value;
-    const status = statusFilter.value;
-    const minPrice = minPriceInput.value ? parseFloat(minPriceInput.value) : 0;
-    const maxPrice = maxPriceInput.value ? parseFloat(maxPriceInput.value) : Infinity;
-    const minStock = stockInput.value ? parseInt(stockInput.value) : 0;
-    
-    const filteredProducts = products.filter(product => {
-        // Filtrar por nombre
-        if (searchTerm && !product.name.toLowerCase().includes(searchTerm) && 
-            !product.description.toLowerCase().includes(searchTerm)) {
-            return false;
-        }
-        
-        // Filtrar por categoría
-        if (categoryId && product.categoryId != categoryId) {
-            return false;
-        }
-        
-        // Filtrar por proveedor
-        if (supplierId && product.supplierId != supplierId) {
-            return false;
-        }
-        
-        // Filtrar por estado
-        if (status && product.status !== status) {
-            return false;
-        }
-        
-        // Filtrar por precio
-        if (product.price < minPrice || product.price > maxPrice) {
-            return false;
-        }
-        
-        // Filtrar por stock
-        if (product.stock < minStock) {
-            return false;
-        }
-        
-        return true;
-    });
-    
-    renderProducts(filteredProducts);
-    
-    // Si estamos en móvil, cerrar el sidebar después de aplicar filtros
-    if (window.innerWidth <= 768) {
-        toggleSidebar();
+async function applyFilters() {
+    showLoader();
+    if (validateFilters()) {
+        return false;
     }
+
+    try {
+        const filterDTO = {
+            Name: searchInput.value || null,
+            MinPrice: minPriceInput.value ? parseFloat(minPriceInput.value) : null,
+            MaxPrice: maxPriceInput.value ? parseFloat(maxPriceInput.value) : null,
+            Stock: stockInput.value ? parseInt(stockInput.value) : null,
+            CategoryId: categoryFilter.value || null,
+            SupplierId: supplierFilter.value || null,
+            Status: statusFilter.value || null
+        };
+
+        await fetchProductsFiltered(filterDTO);
+
+        // actualiza la vista con los productos filtrados
+        renderProducts(products);
+
+    } catch (error) {
+        showError('Error al aplicar filtros: ' + error.message);
+        renderProducts([]);
+    } finally {
+        hideLoader();
+        // para móviles, cerrar el sidebar después de aplicar filtros
+        if (window.innerWidth <= 768) {
+            toggleSidebar();
+        }
+    }
+}
+
+// valida si los filtros se aplicaron correctamente
+function validateFilters() {
+    const fMinPrice = parseFloat(minPriceInput.value)
+    const fMaxPrice = parseFloat(maxPriceInput.value)
+    if (fMinPrice && fMaxPrice && (fMinPrice > fMaxPrice)) {
+        minPriceInput.classList.add('inactive')
+        maxPriceInput.classList.add('inactive')
+        return true;
+    }
+
+    minPriceInput.classList.remove('inactive')
+    maxPriceInput.classList.remove('inactive')
+    return false;
 }
 
 // Resetear filtros
@@ -292,7 +307,7 @@ function resetFilters() {
     searchInput.value = '';
     categoryFilter.value = '';
     supplierFilter.value = '';
-    statusFilter.value = '';
+    statusFilter.value = 'R';
     minPriceInput.value = '';
     maxPriceInput.value = '';
     stockInput.value = '';
@@ -311,7 +326,7 @@ function openAddProductModal() {
 
 // Abrir modal para editar producto
 function openEditProductModal(productId) {
-    const product = products.find(p => p.id === productId);
+    const product = products.find(p => p.productId === productId);
     if (!product) {
         showError('Producto no encontrado');
         return;
@@ -321,7 +336,7 @@ function openEditProductModal(productId) {
     currentProductId = productId;
     
     // Rellenar el formulario con los datos del producto
-    productIdInput.value = product.id;
+    productIdInput.value = product.productId;
     productNameInput.value = product.name;
     productDescInput.value = product.description;
     productPriceInput.value = product.price;
@@ -361,17 +376,17 @@ async function handleProductSubmit(event) {
     };
     
     try {
+        // Si hay un id seleccionado se procede a actualizar, sino a crear el producto
         if (currentProductId) {
-            // Actualizar producto existente
-            await updateProduct(currentProductId, productData);
+            await updateProduct(productData);
             showSuccess('Producto actualizado correctamente');
         } else {
-            // Crear nuevo producto
             await createProduct(productData);
             showSuccess('Producto creado correctamente');
         }
         
         // Recargar productos y cerrar modal
+        resetFilters();
         await fetchProducts();
         renderProducts(products);
         closeModal();
@@ -382,7 +397,7 @@ async function handleProductSubmit(event) {
 
 // Crear nuevo producto
 async function createProduct(productData) {
-    const response = await fetch('/api/products', {
+    const response = await fetch('/products', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -398,8 +413,8 @@ async function createProduct(productData) {
 }
 
 // Actualizar producto existente
-async function updateProduct(productId, productData) {
-    const response = await fetch(`/api/products/${productId}`, {
+async function updateProduct(productData) {
+    const response = await fetch(`/products/${currentProductId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
@@ -424,7 +439,7 @@ function confirmDeleteProduct(productId, productName) {
 // Eliminar producto
 async function deleteProduct(productId) {
     try {
-        const response = await fetch(`/api/products/${productId}`, {
+        const response = await fetch(`/products/${productId}`, {
             method: 'DELETE'
         });
         
@@ -478,10 +493,10 @@ function hideLoader() {
 
 // Mostrar mensaje de error
 function showError(message) {
-    alert(message); // Se podría mejorar con un sistema de notificaciones personalizado
+    //alert(message); // Se podría mejorar con un sistema de notificaciones personalizado
 }
 
 // Mostrar mensaje de éxito
 function showSuccess(message) {
-    alert(message); // Se podría mejorar con un sistema de notificaciones personalizado
+    //alert(message); // Se podría mejorar con un sistema de notificaciones personalizado
 }
