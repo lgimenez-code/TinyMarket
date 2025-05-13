@@ -15,7 +15,8 @@ namespace TinyMarketDTO.RequestsDTO
         public string Name { get; set; }
 
         [StringLength(200, ErrorMessage = "La descripción no puede superar los 200 caracteres.")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
+        public string? Status { get; set; }
 
 
         /// <summary>
@@ -29,7 +30,8 @@ namespace TinyMarketDTO.RequestsDTO
             {
                 CategoryId = dto.CategoryId,
                 Name = dto.Name,
-                Description = dto.Description
+                Description = dto.Description ?? "",
+                Status = dto.Status ?? "R",
             };
         }
     }

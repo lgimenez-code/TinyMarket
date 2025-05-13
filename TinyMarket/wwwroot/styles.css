@@ -139,6 +139,13 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 24px;
+    position: relative;
+}
+
+.no-products {
+    position: absolute;
+    top: 200px;
+    left: 300px;
 }
 
 /* --- Card de productos --- */

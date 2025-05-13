@@ -30,7 +30,7 @@ namespace TinyMarketDTO.RequestsDTO
         [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar un Proveedor")]
         public int? SupplierId { get; set; }
         public DateTime? ExpirationDate { get; set; }
-        public string Status { get; set; }
+        public string? Status { get; set; }
 
         /// <summary>
         /// convierte un DTO en una entidad
@@ -49,7 +49,7 @@ namespace TinyMarketDTO.RequestsDTO
                 CategoryId = dto.CategoryId,
                 SupplierId = dto.SupplierId,
                 ExpirationDate = dto.ExpirationDate,
-                Status = dto.Status
+                Status = dto.Status ?? "R"
             };
         }
     }

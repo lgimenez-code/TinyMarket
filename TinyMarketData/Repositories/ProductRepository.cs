@@ -152,7 +152,7 @@ namespace TinyMarketData.Repositories
                         cmd.Parameters.Add(new SqlParameter("@CATEGORY_ID", entity.CategoryId));
                         cmd.Parameters.Add(new SqlParameter("@SUPPLIER_ID", entity.SupplierId));
                         cmd.Parameters.Add(new SqlParameter("@EXPIRATION_DATE", entity.ExpirationDate));
-                        cmd.Parameters.Add(new SqlParameter("@STATUS", entity?.Status ?? "R"));
+                        cmd.Parameters.Add(new SqlParameter("@STATUS", entity?.Status));
 
                         cmd.ExecuteNonQuery();
                     }

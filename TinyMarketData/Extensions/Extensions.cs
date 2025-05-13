@@ -18,6 +18,7 @@ namespace TinyMarketData.Extensions
 
             services.AddScoped<ICategoryRepository>(sp => new CategoryRepository(connectionString));
             services.AddScoped<IProductRepository>(sp => new ProductRepository(connectionString));
+            services.AddScoped<ISupplierRepository>(sp => new SupplierRepository(connectionString));
 
             return services;
         }
@@ -29,6 +30,7 @@ namespace TinyMarketData.Extensions
         {
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ISupplierService, SupplierService>();
 
             return services;
         }
