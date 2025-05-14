@@ -2,6 +2,7 @@
 using TinyMarketCore.Entities;
 using TinyMarketCore.Services;
 using TinyMarketDTO.RequestsDTO;
+using TinyMarketDTO.ResponseDTO;
 
 namespace TinyMarketWebApi.Controllers
 {
@@ -113,7 +114,7 @@ namespace TinyMarketWebApi.Controllers
 
                 int id = _productService.Add(product);
 
-                return Ok(new { message = "Producto registrado correctamente", id });
+                return Ok(new InsertResponseDTO() { Message = "Producto registrado correctamente", Id = id });
             }
             catch (Exception ex)
             {

@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyMarketDTO", "TinyMarket
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyMarketData", "TinyMarketData\TinyMarketData.csproj", "{6BE06CC2-D2A3-4408-8442-37371CA518EE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyMarketTests", "TinyMarketTests\TinyMarketTests.csproj", "{AC6CE581-4DA4-45C1-8494-06DFF997B65F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{6BE06CC2-D2A3-4408-8442-37371CA518EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BE06CC2-D2A3-4408-8442-37371CA518EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BE06CC2-D2A3-4408-8442-37371CA518EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC6CE581-4DA4-45C1-8494-06DFF997B65F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC6CE581-4DA4-45C1-8494-06DFF997B65F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC6CE581-4DA4-45C1-8494-06DFF997B65F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC6CE581-4DA4-45C1-8494-06DFF997B65F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,6 +2,7 @@
 using TinyMarketCore.Entities;
 using TinyMarketCore.Services;
 using TinyMarketDTO.RequestsDTO;
+using TinyMarketDTO.ResponseDTO;
 
 namespace TinyMarketWebApi.Controllers
 {
@@ -64,7 +65,7 @@ namespace TinyMarketWebApi.Controllers
 
                 int id = _categoryService.Add(category);
 
-                return Ok(new { message = "Categoría registrada correctamente", id });
+                return Ok(new InsertResponseDTO() { Message = "Categoría registrada correctamente", Id = id });
             }
             catch (Exception ex)
             {
