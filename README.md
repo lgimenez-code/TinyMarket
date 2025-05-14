@@ -99,6 +99,9 @@ http://localhost:9999/index.html
 ### Ejecución de pruebas
 Para ejecutar las pruebas en Visual Studio sólo basta con posicionarnos sobre el proyecto "TinyMarketTests", luego hacer clic derecho en el mismo y seleccionar "Ejecutar pruebas".
 
+![image](https://github.com/user-attachments/assets/9966651e-2127-4d12-b29b-7bb89d75ec18)
+
+
 ----
 ### Estructura de la base de datos
 
