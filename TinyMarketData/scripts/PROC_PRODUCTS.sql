@@ -1,0 +1,136 @@
+-- insertar un nuevo producto
+CREATE PROCEDURE InsertProduct
+    @NAME NVARCHAR(100),
+    @DESCRIPTION NVARCHAR(500),
+    @PRICE DECIMAL(10, 2),
+    @STOCK INT,
+    @CATEGORY_ID INT,
+    @SUPPLIER_ID INT,
+    @EXPIRATION_DATE DATE = NULL,
+    @PRODUCT_ID INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- verifica si la categoría existe
+    IF NOT EXISTS (
+        SELECT 1 FROM CATEGORIES
+        WHERE CATEGORY_ID = @CATEGORY_ID AND STATUS = 'R'
+    )
+    BEGIN
+        THROW 50001, 'La categoría especificada no existe o no está activa.', 1;
+    END
+
+    -- verifica si el proveedor existe
+    IF NOT EXISTS (
+        SELECT 1 FROM SUPPLIERS
+        WHERE SUPPLIER_ID = @SUPPLIER_ID AND STATUS = 'R'
+    )
+    BEGIN
+        THROW 50001, 'El proveedor especificado no existe o no está activo.', 1;
+    END
+
+    INSERT INTO PRODUCTS (NAME,DESCRIPTION,PRICE,STOCK,CATEGORY_ID,SUPPLIER_ID,EXPIRATION_DATE,CREATION_DATE,MODIFICATION_DATE)
+    VALUES ( @NAME, @DESCRIPTION, @PRICE, @STOCK, @CATEGORY_ID, @SUPPLIER_ID, @EXPIRATION_DATE, GETDATE(), NULL );
+
+    SET @PRODUCT_ID = SCOPE_IDENTITY();
+END;
+GO
+
+-- obtiene un listado de Productos
+CREATE PROCEDURE GetProducts
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT PRODUCT_ID,NAME,DESCRIPTION,PRICE,STOCK,CATEGORY_ID,SUPPLIER_ID,EXPIRATION_DATE,CREATION_DATE,MODIFICATION_DATE,STATUS
+    FROM PRODUCTS
+    WHERE STATUS = 'R';
+END;
+GO
+
+-- obtiene un listado de productos con los filtros ingresados
+CREATE PROCEDURE GetProductsFiltered
+    @NAME NVARCHAR(100) = NULL,
+    @CATEGORY_ID INT = NULL,
+    @SUPPLIER_ID INT = NULL,
+    @MIN_PRICE DECIMAL(10, 2) = NULL,
+    @MAX_PRICE DECIMAL(10, 2) = NULL,
+    @STATUS NVARCHAR(1) = 'R',
+	@STOCK INT = 1
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT PRODUCT_ID,NAME,DESCRIPTION,PRICE,STOCK,CATEGORY_ID,SUPPLIER_ID,EXPIRATION_DATE,CREATION_DATE,MODIFICATION_DATE,STATUS        
+    FROM PRODUCTS
+    WHERE (@STATUS IS NULL OR STATUS = @STATUS)
+        AND (@NAME IS NULL OR NAME LIKE '%' + @NAME + '%')
+        AND (@CATEGORY_ID IS NULL OR CATEGORY_ID = @CATEGORY_ID)
+        AND (@SUPPLIER_ID IS NULL OR SUPPLIER_ID = @SUPPLIER_ID)
+        AND (@MIN_PRICE IS NULL OR PRICE >= @MIN_PRICE)
+        AND (@MAX_PRICE IS NULL OR PRICE <= @MAX_PRICE)
+		AND (@STOCK IS NULL OR STOCK >= @STOCK)
+END;
+GO
+
+-- actualiza un Producto
+CREATE PROCEDURE UpdateProduct
+    @PRODUCT_ID INT,
+    @NAME NVARCHAR(100),
+    @DESCRIPTION NVARCHAR(500),
+    @PRICE DECIMAL(10, 2),
+    @STOCK INT,
+    @CATEGORY_ID INT,
+    @SUPPLIER_ID INT,
+    @EXPIRATION_DATE DATE,
+    @STATUS NVARCHAR(1)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+	-- verifica si la categoría existe
+    IF NOT EXISTS (
+        SELECT 1 FROM CATEGORIES
+        WHERE CATEGORY_ID = @CATEGORY_ID AND STATUS = 'R'
+    )
+    BEGIN
+        THROW 50001, 'La categoría especificada no existe o no está activa.', 1;
+    END
+
+    -- verifica si el proveedor existe
+    IF NOT EXISTS (
+        SELECT 1 FROM SUPPLIERS
+        WHERE SUPPLIER_ID = @SUPPLIER_ID AND STATUS = 'R'
+    )
+    BEGIN
+        THROW 50001, 'El proveedor especificado no existe o no está activo.', 1;
+    END
+
+    UPDATE PRODUCTS
+    SET NAME = @NAME,
+        DESCRIPTION = @DESCRIPTION,
+        PRICE = @PRICE,
+        STOCK = @STOCK,
+        CATEGORY_ID = @CATEGORY_ID,
+        SUPPLIER_ID = @SUPPLIER_ID,
+        EXPIRATION_DATE = @EXPIRATION_DATE,
+        STATUS = @STATUS,
+        MODIFICATION_DATE = GETDATE()
+    WHERE PRODUCT_ID = @PRODUCT_ID;
+END;
+GO
+
+-- eliminar un producto existente
+CREATE PROCEDURE DeleteProduct
+    @PRODUCT_ID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE PRODUCTS
+	SET STATUS = 'A'
+    WHERE PRODUCT_ID = @PRODUCT_ID;
+END;
+GO
+

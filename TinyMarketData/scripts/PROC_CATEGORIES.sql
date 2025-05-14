@@ -1,0 +1,69 @@
+-- insertar una nueva categoría
+CREATE PROCEDURE InsertCategory
+    @NAME NVARCHAR(50),
+    @DESCRIPTION NVARCHAR(200),
+    @CATEGORY_ID INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    INSERT INTO CATEGORIES (NAME, DESCRIPTION, STATUS, CREATION_DATE, MODIFICATION_DATE)
+    VALUES (@NAME, @DESCRIPTION, 'R', GETDATE(), NULL);
+
+    SET @CATEGORY_ID = SCOPE_IDENTITY();
+END;
+GO
+
+-- obtener todas las categorías
+CREATE PROCEDURE GetCategories
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    SELECT CATEGORY_ID, NAME, DESCRIPTION, CREATION_DATE, MODIFICATION_DATE, STATUS
+    FROM CATEGORIES
+	WHERE STATUS = 'R';
+END;
+GO
+
+-- actualizar una categoría existente
+CREATE PROCEDURE UpdateCategory
+    @CATEGORY_ID INT,
+    @NAME NVARCHAR(50),
+    @DESCRIPTION NVARCHAR(200),
+    @STATUS NVARCHAR(1)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE CATEGORIES
+    SET NAME = @NAME,
+        DESCRIPTION = @DESCRIPTION,
+        STATUS = @STATUS,
+        MODIFICATION_DATE = GETDATE()
+    WHERE CATEGORY_ID = @CATEGORY_ID;
+END;
+GO
+
+-- eliminar una categoría por su ID
+CREATE PROCEDURE DeleteCategory
+    @CATEGORY_ID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+	-- Verificar si el proveedor está asociado a algún producto
+    IF EXISTS (
+        SELECT 1 
+        FROM PRODUCTS 
+        WHERE CATEGORY_ID = @CATEGORY_ID
+    )
+    BEGIN
+        THROW 50001, 'No se puede eliminar el proveedor porque está asociado a uno o más productos.', 1;
+    END
+
+    UPDATE CATEGORIES
+	SET STATUS = 'A'
+	WHERE CATEGORY_ID = @CATEGORY_ID;
+END;
+GO

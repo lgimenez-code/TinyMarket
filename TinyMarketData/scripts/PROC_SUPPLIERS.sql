@@ -1,0 +1,79 @@
+-- registra un proveedor
+CREATE PROCEDURE InsertSupplier
+    @NAME NVARCHAR(100),
+    @ADDRESS NVARCHAR(200),
+    @PHONE NVARCHAR(20),
+    @EMAIL NVARCHAR(100),
+    @PROVINCE_ID INT = NULL,
+    @SUPPLIER_ID INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO SUPPLIERS (NAME, ADDRESS, PHONE, EMAIL, PROVINCE_ID, STATUS, CREATION_DATE, MODIFICATION_DATE)
+    VALUES (@NAME, @ADDRESS, @PHONE, @EMAIL, @PROVINCE_ID, 'R', GETDATE(), NULL);
+
+    SET @SUPPLIER_ID = SCOPE_IDENTITY();
+END;
+GO
+
+-- obtiene una lista de proveedores
+CREATE PROCEDURE GetSuppliers
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT SUPPLIER_ID, NAME, ADDRESS, PHONE, EMAIL, PROVINCE_ID, CREATION_DATE, MODIFICATION_DATE, STATUS
+    FROM SUPPLIERS
+    WHERE STATUS = 'R';
+END;
+GO
+
+-- modifica un proveedor
+CREATE PROCEDURE UpdateSupplier
+    @SUPPLIER_ID INT,
+    @NAME NVARCHAR(100),
+    @ADDRESS NVARCHAR(200),
+    @PHONE NVARCHAR(20),
+    @EMAIL NVARCHAR(100),
+    @PROVINCE_ID INT = NULL,
+    @STATUS NVARCHAR(1)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE SUPPLIERS
+    SET NAME = @NAME,
+        ADDRESS = @ADDRESS,
+        PHONE = @PHONE,
+        EMAIL = @EMAIL,
+        PROVINCE_ID = @PROVINCE_ID,
+        STATUS = @STATUS,
+        MODIFICATION_DATE = GETDATE()
+    WHERE SUPPLIER_ID = @SUPPLIER_ID;
+END;
+GO
+
+-- elimina un proveedor
+CREATE PROCEDURE DeleteSupplier
+    @SUPPLIER_ID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Verificar si el proveedor está asociado a algún producto
+    IF EXISTS (
+        SELECT 1 
+        FROM PRODUCTS 
+        WHERE SUPPLIER_ID = @SUPPLIER_ID
+    )
+    BEGIN
+        THROW 50001, 'No se puede eliminar el proveedor porque está asociado a uno o más productos.', 1;
+    END
+
+    -- Eliminar proveedor si no está asociado
+    UPDATE SUPPLIERS
+	SET STATUS = 'A'
+    WHERE SUPPLIER_ID = @SUPPLIER_ID;
+END;
+GO
