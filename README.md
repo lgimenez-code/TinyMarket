@@ -66,7 +66,7 @@ git clone https://github.com/tu-usuario/TinyMarket.git
 cd TinyMarket
 ```
 2 - Configurar la base de datos:
-- Ejecutar el script SQL ubicado en TinyMarketData/Scripts/CreateDatabase.sql
+- Ejecutar el script SQL ubicado en TinyMarketData/Scripts/DATABASE_MINIMARKET.sql
 - Ejecutar los scripts de cada Procedimiento.
 - Modificar la cadena de conexión en appsettings.json del proyecto TinyMarketWebAPI.
 3 - Ejecutar la aplicación.
@@ -94,6 +94,7 @@ La aplicación incluye una interfaz web básica accesible en:
 http://localhost:9999/index.html
 ```
 ![image](https://github.com/user-attachments/assets/86217b15-ec32-497d-babd-d1bc449824a5)
+<img src="https://github.com/user-attachments/assets/e29dd67e-8c83-4a00-95b9-741fe042f515" width="0px" height="0px" style="display:none;" />
 
 ----
 ### Ejecución de pruebas
